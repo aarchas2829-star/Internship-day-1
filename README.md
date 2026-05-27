@@ -1,6 +1,6 @@
 # Day 1 Git Project 
 
- This is my first GitHub 
+ This is my first GitHub project
 
  ## What I Learned
  - Git install and setup
