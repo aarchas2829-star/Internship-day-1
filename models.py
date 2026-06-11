@@ -13,6 +13,6 @@ class Task(Base):
     description = Column(String)
     priority = Column(String)
     status = Column(String)
-
+    due_date = Column(String)
 
 Base.metadata.create_all(bind=engine)

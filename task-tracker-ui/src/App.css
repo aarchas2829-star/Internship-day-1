@@ -4,9 +4,9 @@ body {
 
   background: linear-gradient(
     135deg,
-    #dbeafe 0%,
-    #eff6ff 50%,
-    #f8fafc 100%
+    #e0f2fe 0%,
+    #dbeafe 50%,
+    #eff6ff 100%
   );
 
   min-height: 100vh;
@@ -22,12 +22,16 @@ body {
 
   padding: 30px;
 }
+.hero-section {
+  margin-bottom: 40px;
+}
 
 h1 {
-  color: #1e3a8a;
-  font-size: 42px;
-  margin-bottom: 10px;
-  font-weight: bold;
+  color: #2563eb;
+  font-size: 46px;
+  margin-bottom: 20px;
+  font-weight:800;
+  letter-spacing: -1px;
 }
 
 p {
@@ -75,7 +79,7 @@ button {
     margin-left: 0 !important;
   }
 
-  background: #1e3a8a;
+  background: #3b82f6;
   color: white;
 
   border: none;
@@ -88,7 +92,7 @@ button {
 }
 
 button:hover {
-  background: #162a66;
+  background: #2563eb;
   transform: translateY(-2px);
 }
 
@@ -102,6 +106,9 @@ button:hover {
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
 }
 .task-input-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
   position: relative;
   display: inline-block;
 }
@@ -201,4 +208,222 @@ button:hover {
   color: #374151;
   line-height: 1.6;
   font-size: 15px;
+}
+.progress-container {
+  width: 100%;
+  height: 12px;
+  background: #e5e7eb;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 15px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    #10b981,
+    #22c55e
+  );
+
+  transition: width 0.5s ease;
+}
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+
+  width: 100%;
+  max-width: 900px;
+
+  margin: 30px auto;
+}
+
+.dashboard-card {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(119, 219, 254, 0.8);
+  backdrop-filter: blur(10px);
+
+  padding: 20px;
+
+  border-radius: 18px;
+
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.08);
+
+  text-align: center;
+
+  transition: 0.3s;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+}
+
+.dashboard-card h3 {
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+}
+
+.dashboard-card h2 {
+  margin-top: 10px;
+  color: #1e3a8a;
+}
+.completion-wrapper {
+  display: flex;
+  justify-content: center;
+
+  width: 100%;
+
+  margin-top: 25px;
+}
+.completion-card {
+  width: 80%;
+  max-width: 700px;
+  background:rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(191, 219, 254, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 30px;
+
+  border-radius: 20px;
+
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.08);
+
+  text-align: center;
+}
+
+.header-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 25px;
+  position: relative;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.header-row h1 {
+  text-align: center;
+}
+
+.theme-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.theme-btn {
+  background: #1e3a8a;
+  color: white;
+
+  border: none;
+
+  padding: 10px 15px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+}
+
+.dark {
+  color: white;
+}
+
+.dark h1 {
+  color: #93c5fd;
+}
+
+.dark p {
+  color: #cbd5e1;
+}
+.dark {
+  background: #0f172a;
+
+  min-height: 100vh;
+
+  border-radius: 20px;
+
+  padding: 20px;
+}
+.dark .dashboard-card,
+.dark .completion-card,
+.dark .ai-panel {
+  background: #1e293b;
+
+  color: white;
+}
+.dark input,
+.dark select {
+  background: #334155;
+
+  color: white;
+}
+ul {
+  list-style: none;
+  padding: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+ul {
+  list-style: none;
+  padding: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.task-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+.empty-state {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  margin-top: 30px;
+
+  font-size: 18px;
+  font-weight: 600;
+
+  color: #64748b;
+
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+.footer {
+  margin-top: 50px;
+
+  color: #64748b;
+
+  font-size: 14px;
+
+  text-align: center;
+}
+.today-date {
+  color: #64748b;
+
+  font-size: 15px;
+
+  margin-top: -5px;
+
+  margin-bottom: 20px;
+}
+.stats-details{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:20px;
+}
+
+.stats-details div{
+  padding:12px;
+  border-radius:10px;
+  background:#f1f5f9;
+  text-align:center;
+  font-weight:600;
 }

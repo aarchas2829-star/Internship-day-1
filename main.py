@@ -23,7 +23,7 @@ class TaskCreate(BaseModel):
     title: str
     status: StatusEnum
     priority: PriorityEnum
-    
+    due_date: str
 load_dotenv()
 
 print("API KEY FOUND:", os.getenv("OPENAI_API_KEY"))
@@ -48,24 +48,29 @@ class TaskUpdate(BaseModel):
     title: str
     status: StatusEnum
     priority: PriorityEnum
+    due_date: str
 tasks = [
     {
         "id": 1,
         "title": "Complete Internship Report",
         "status": "pending",
-        "priority": "high"
+        "priority": "high",
+        "due_date": ""
     },
     {
         "id": 2,
         "title": "Learn FastAPI",
         "status": "completed",
-        "priority": "medium"
+        "priority": "medium",
+        "due_date": ""
     },
     {
     "id": 3,
     "title": "Learn Django",
     "status": "todo",
-    "priority": "low"
+    "priority": "low",
+    "due_date": ""
+    
   }
 ]
 
@@ -73,6 +78,7 @@ class TaskUpdate(BaseModel):
     title: str
     status: StatusEnum
     priority: PriorityEnum
+    due_date: str
 
 class PriorityRequest(BaseModel):
     title: str
@@ -94,7 +100,8 @@ def add_task(task_data: TaskCreate):
        title=task_data.title,
        description="",
        priority=task_data.priority,
-       status=task_data.status
+       status=task_data.status,
+       due_date=task_data.due_date
     )
 
     db.add(new_task)
@@ -139,6 +146,7 @@ def update_task(task_id: int, task_data: TaskUpdate):
     task.title = task_data.title
     task.status = task_data.status
     task.priority = task_data.priority
+    task.due_date = task_data.due_date
 
     db.commit()
     db.refresh(task)
@@ -148,7 +156,8 @@ def update_task(task_id: int, task_data: TaskUpdate):
         "id": task.id,
         "title": task.title,
         "status": task.status,
-        "priority": task.priority
+        "priority": task.priority,
+        "due_date": task.due_date
     }
 @app.post("/suggest-priority")
 def suggest_priority(data: PriorityRequest):

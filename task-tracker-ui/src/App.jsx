@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from 'react';
 import './App.css';
 import { useEffect } from 'react';
@@ -6,7 +7,7 @@ import {
   addTask as addTaskApi,
   deleteTask,
   updateTask
-} from './api/taskApi';
+} from './api/taskAPI';
 
 function App() {
   const [task, setTask] = useState('');
@@ -19,6 +20,9 @@ function App() {
   const [showAI, setShowAI] = useState(false);
   const [aiPriority, setAiPriority] = useState("");
   const [aiReason, setAiReason] = useState("");
+  const [darkMode, setDarkMode] = useState(false);
+  const [dueDate, setDueDate] = useState("");
+  const [showChart, setShowChart] = useState(false);
   
   useEffect(() => {
     loadTasks();
@@ -45,9 +49,16 @@ function App() {
       console.log("Sending:", {
        title: task,
        status: "todo",
-       priority: "low"
+       priority: "low",
+       due_date: dueDate
       });
-      await addTaskApi(task, status, priority);
+      console.log(Notification.permission);
+      await addTaskApi(task, status, priority,dueDate);
+      if (Notification.permission === "granted") {
+        new Notification("✅ Task Added", {
+        body: `${task} has been added successfully`
+        });
+      }
 
       await loadTasks();
 
@@ -75,10 +86,58 @@ function App() {
   tasks.length > 0
     ? Math.round((completedCount / tasks.length) * 100)
     : 0;
+  const getTimeRemaining = (dueDate) => {
+    if (!dueDate) return "";
+
+    const now = new Date();
+    const due = new Date(dueDate);
+
+    const diff = due - now;
+
+    if (diff < 0) {
+      return "❗ OVERDUE ❗";
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (days >= 1) {
+      return `⏰ ${days} day${days > 1 ? "s" : ""} left`;
+    }
+
+    const hours = Math.floor(
+      (diff % (1000 * 60 * 60 * 24)) /
+      (1000 * 60 * 60)
+    );
+
+    const minutes = Math.floor(
+      (diff % (1000 * 60 * 60)) /
+      (1000 * 60)
+    );
+
+    const seconds = Math.floor(
+      (diff % (1000 * 60)) / 1000
+    );
+
+    return `⏰ ${hours}h ${minutes}m ${seconds}s left`;
+  };
 
   return (
-    <div className="app">
-      <h1>Task Tracker</h1>
+    <div className={`app ${darkMode ? "dark" : ""}`}>
+      <div className="header-row">
+
+        <h1>Task Tracker</h1>
+        <p className="today-date">
+          📅 {new Date().toLocaleDateString()}
+        </p>
+
+        <button
+          className="theme-btn"
+          onClick={() => setDarkMode(!darkMode)}
+        >
+          {darkMode ? "☀️ Light" : "🌙 Dark"}
+        </button>
+
+      </div>
       <p>Manage your daily tasks efficiently 🚀</p>
     
       <form
@@ -87,6 +146,7 @@ function App() {
           addTask();
         }}
       >
+      <div className="task-row">
         <div className="task-input-container">
           <input
             type="text"
@@ -94,7 +154,12 @@ function App() {
             value={task}
             onChange={(e) => setTask(e.target.value)}
           />
-        
+          
+          <input
+            type="datetime-local"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+          />
           <button
             type="button"
             className="ai-button"
@@ -147,6 +212,7 @@ function App() {
             ✦ Ask AI 
           </button>
         </div>
+      </div>
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
@@ -234,74 +300,79 @@ function App() {
             <p>{aiReason}</p>
           </div>
         )}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          margin: "30px"
-        }}
-      >
-  
-        <div
-          className="stats-card"
-          style={{
-            textAlign: "center",
-            padding: "25px",
-            borderRadius: "16px",
-            background: "white",
-            boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-            minWidth: "300px",
+      <div className="dashboard-cards">
 
-            transition: "0.3s",
-            cursor: "default"
-          }}
-        >
-          <div
-            style={{
-              fontSize: "28px",
-              fontWeight: "bold",
-              color: "#1e3a8a",
-              marginBottom: "15px"
-            }}
-          >
-            📋 Total Tasks: {tasks.length}
-          </div>
-          <hr
-            style={{
-              border: "none",
-              borderTop: "1px solid #e5e7eb",
-              margin: "15px 0"
-           }}
-          />
-    
-          <div style={{ fontSize: "16px", lineHeight: "2" }}>
-            <div style={{ color: "#1baf52", fontWeight: "600" }}>
-              ✅ Completed: {completedCount}
-            </div>
+        <div className="dashboard-card">
+          <h3>📋 Total</h3>
+          <h2>{tasks.length}</h2>
+        </div>
 
-            <div style={{ color: "#ca8a04", fontWeight: "600" }}>
-              ⏳ In Progress: {inProgressCount}
-            </div>
+        <div className="dashboard-card">
+          <h3>✅ Completed</h3>
+          <h2>{completedCount}</h2>
+        </div>
 
-            <div style={{ color: "#dc2626", fontWeight: "600" }}>
-              📝 Todo: {todoCount}
-            </div>
+        <div className="dashboard-card">
+          <h3>⏳ Progress</h3>
+          <h2>{inProgressCount}</h2>
+        </div>
 
-            <div
-              style={{
-                marginTop: "15px",
-                fontWeight: "bold",
-                color: "#304a94"
-              }}
-            >
-              🎯 Completion Rate: {percentage}%
-            </div>
-          </div>
+        <div className="dashboard-card">
+          <h3>📝 Todo</h3>
+          <h2>{todoCount}</h2>
         </div>
       </div>
-      </div>
+    </div>
 
-      <ul>
+   <div className="completion-wrapper">
+
+
+      <div className="completion-card">
+
+
+        <h3>🎯 Completion</h3>
+
+
+        <h2>{percentage}%</h2>
+
+
+        <div className="progress-container">
+          <div
+            className="progress-bar"
+            style={{
+              width: `${percentage}%`
+            }}
+          ></div>
+        </div>
+    
+
+
+        <p>
+          {completedCount} of {tasks.length} tasks completed
+        </p>
+
+
+      </div>
+    </div>
+
+      {tasks.length === 0 && (
+        <div className="empty-state">
+          🎉 No tasks available
+          <br />
+          Add your first task to get started.
+        </div>
+      )}
+       
+      <ul
+      style={{
+        listStyle: "none",
+        padding: 0,
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center"
+      }}
+      >
         {tasks
           .filter((t) =>
             t.title.toLowerCase().includes(search.toLowerCase())
@@ -319,17 +390,20 @@ function App() {
               )
             }
             style={{
-              background:
-                filterStatus === ""
-                  ? "#ffffff"
-                  :filterStatus === "completed"
-                  ? "#d1fae5"
-                  : filterStatus === "in_progress"
-                  ? "#fff59d"
-                  : "#fecaca",
+              background: darkMode
+                ? "#1e293b"
+                : (
+                    filterStatus === ""
+                      ? "#ffffff"
+                      : filterStatus === "completed"
+                      ? "#d1fae5"
+                      : filterStatus === "in_progress"
+                      ? "#fff59d"
+                      : "#fecaca"
+                  ),
               padding: "12px",
               margin: "12px auto",
-              width: "320px",
+              width: "700px",
               borderRadius: "10px",
               boxShadow: "0 3px 8px rgba(0,0,0,0.1)",
               display: "flex",
@@ -337,9 +411,107 @@ function App() {
               alignItems: "center"
             }}
           >
-            <div>
-              <div>{t.title}</div>
+            <div
+              style={{
+                width: "40px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginRight: "15px"
+              }}
+            >
 
+              {t.status === "todo" && (
+                <button
+                  onClick={async (e) => {
+                    e.stopPropagation();
+
+                    try {
+                      await axios.put(
+                        `http://localhost:8000/tasks/${t.id}`,
+                        {
+                          title: t.title,
+                          status: "in_progress",
+                          priority: t.priority,
+                          due_date: t.due_date || ""
+                        }
+                      );
+
+                    await loadTasks();
+                  } catch (error) {
+                    console.log(error);
+                  }
+                }}
+                style={{
+                  border: "none",
+                  background: "transparent",
+                  cursor: "pointer",
+                  fontSize: "22px"
+                }}
+              >
+                ⏳
+              </button>
+            )}
+
+            {t.status === "in_progress" && (
+              <button
+                onClick={async (e) => {
+                  e.stopPropagation();
+
+                  try {
+                    await axios.put(
+                      `http://localhost:8000/tasks/${t.id}`,
+                     {
+                        title: t.title,
+                        status: "completed",
+                        priority: t.priority,
+                        due_date: t.due_date || ""
+                      }
+                    );
+
+                  await loadTasks();
+                } catch (error) {
+                  console.log(error);
+                }
+              }}
+              style={{
+                border: "none",
+                background: "transparent",
+                cursor: "pointer",
+                fontSize: "22px"
+              }}
+            >
+              ⬜
+            </button>
+          )}
+
+          {t.status === "completed" && (
+            <div
+              style={{
+                width: "30px",
+                textAlign: "center",
+                fontSize: "22px"
+              }}
+            >
+              ☑
+            </div>
+          )}
+
+        </div>
+            <div
+              style={{
+                flex: 1,
+                textAlign: "center"
+              }}
+            >
+              <div
+                style={{
+                fontSize: "18px",
+                fontWeight: "500"
+              }}
+            >
+              {t.title}
+            </div>
               {selectedTask === t.id && (
                 <div
                   style={{
@@ -349,28 +521,85 @@ function App() {
                   }}
                 >
                   <div>Status: {t.status}</div>
+
                   <div>Priority: {t.priority}</div>
-                </div>
-              )}
+
+                  {t.due_date && (
+                    <>
+                      <div>
+                        📅 Due: {new Date(t.due_date).toLocaleString()}
+                      </div>
+
+                    <div
+                      style={{
+                        fontWeight: "bold",
+                        color: getTimeRemaining(t.due_date).includes("OVERDUE")
+                          ? "#dc2626"
+                          : "#2563eb"
+                      }}
+                    >
+                      {getTimeRemaining(t.due_date)}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
             </div>
 
-            <div>
+            <div
+              style={{
+                display: "flex",
+                gap: "8px"
+              }}
+            >
               {/* EDIT BUTTON */}
               <button
                 onClick={async () => {
-                  const newText = prompt("Edit your task:", t.title);
-                  if (!newText || newText.trim() === "") {
-                    alert("Task cannot be empty");
+
+                  const newTitle = prompt(
+                    "Edit title:",
+                    t.title
+                  );
+
+                  if (!newTitle || newTitle.trim() === "") {
                     return;
                   }
-                  if (newText && newText.trim() !== "") {
-                    try {
-                      await updateTask(t.id, newText);
-                      await loadTasks();
-                    } catch (error) {
-                      console.log("Error updating task:", error);
-                    }
+
+                  const newStatus = prompt(
+                    "Status (todo, in_progress, completed):",
+                    t.status
+                  );
+
+                  if (!newStatus) return;
+
+                  const newPriority = prompt(
+                    "Priority (low, medium, high):",
+                    t.priority
+                  );
+
+                  if (!newPriority) return;
+
+                    const newDueDate = prompt(
+                      "Due Date (YYYY-MM-DDTHH:MM):",
+                      t.due_date || ""
+                    );
+
+                  try {
+
+                    await updateTask(
+                      t.id,
+                      newTitle,
+                      newStatus,
+                      newPriority,
+                      newDueDate
+                    );
+
+                    await loadTasks();
+
+                  } catch (error) {
+                    console.log("Error updating task:", error);
                   }
+
                 }}
                 style={{
                   background: "#1e3a8a",
@@ -394,6 +623,11 @@ function App() {
                   } catch (error) {
                     console.log("Error deleting task:", error);
                   }
+                  if (Notification.permission === "granted") {
+                    new Notification("🗑️ Task Deleted", {
+                      body: "Task deleted successfully"
+                    });
+                  }
                 }}
                 style={{
                   background: "#e11d48",
@@ -410,6 +644,9 @@ function App() {
           </div>
         ))}
       </ul>
+      <footer className="footer">
+        Built with React + FastAPI 🚀
+      </footer>
     </div>
   );  
 }
