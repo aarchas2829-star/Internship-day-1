@@ -1,9 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "https://adorable-alignment-production-112d.up.railway.app";
-
-export const getTasks = async () => {
-  return await axios.get(`${BASE_URL}/tasks`);
+const BASE_URL = "https://internship-day-1-production.up.railway.app";
 };
 
 export const addTask = async (
