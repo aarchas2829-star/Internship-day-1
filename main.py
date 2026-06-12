@@ -79,7 +79,9 @@ class TaskUpdate(BaseModel):
 
 class PriorityRequest(BaseModel):
     title: str
-
+@app.get("/")
+def home():
+    return {"status": "Backend Running"}
 @app.get("/tasks")
 def get_tasks():
 
