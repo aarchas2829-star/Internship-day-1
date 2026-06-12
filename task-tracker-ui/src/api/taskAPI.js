@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const BASE_URL = "https://internship-day-1-production.up.railway.app";
-};
+
 
 export const addTask = async (
   title,
