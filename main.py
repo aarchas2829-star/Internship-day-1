@@ -7,7 +7,7 @@ from database import SessionLocal
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
-from openai import OpenAI
+#from openai import OpenAI
 from fastapi.middleware.cors import CORSMiddleware
 
 class StatusEnum(str, Enum):
@@ -26,11 +26,11 @@ class TaskCreate(BaseModel):
     due_date: str
 load_dotenv()
 
-print("API KEY FOUND:", os.getenv("OPENAI_API_KEY"))
+#print("API KEY FOUND:", os.getenv("OPENAI_API_KEY"))
 
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
-)
+#client = OpenAI(
+ #   api_key=os.getenv("OPENAI_API_KEY")
+#)
 
 app = FastAPI()
 app.add_middleware(
