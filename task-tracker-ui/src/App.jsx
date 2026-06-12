@@ -9,6 +9,8 @@ import {
   updateTask
 } from './api/taskAPI';
 
+const BASE_URL = "https://internship-day-1-production.up.railway.app";
+
 function App() {
   const [task, setTask] = useState('');
   const [tasks, setTasks] = useState([]);
@@ -428,7 +430,7 @@ function App() {
 
                     try {
                       await axios.put(
-                        `http://localhost:8000/tasks/${t.id}`,
+                        `${BASE_URL}/tasks/${t.id}`,
                         {
                           title: t.title,
                           status: "in_progress",
@@ -460,7 +462,7 @@ function App() {
 
                   try {
                     await axios.put(
-                      `http://localhost:8000/tasks/${t.id}`,
+                      `${BASE_URL}/tasks/${t.id}`,
                      {
                         title: t.title,
                         status: "completed",
